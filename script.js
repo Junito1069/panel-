@@ -1,62 +1,57 @@
 import { db, auth } from "./firebase.js";
 import {
-    collection,
-    addDoc,
-    getDocs,
-    deleteDoc,
-    doc,
-    updateDoc,
-    getDoc
+    collection, addDoc, getDocs, deleteDoc,
+    doc, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { signInWithEmailAndPassword }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const formLogin = document.getElementById("formLogin");
 const form = document.getElementById("formProducto");
-const lista = document.getElementById("listaProductos");
 const panelAdmin = document.getElementById("panelAdmin");
+const lista = document.getElementById("listaProductos");
 const buscador = document.getElementById("buscador");
-const gbInput = document.getElementById("gb");
-const precioInput = document.getElementById("precio");
-const importador = document.getElementById("importador");
-const btnImportar = document.getElementById("btnImportar");
+const btnGuardarCambios = document.getElementById("btnGuardarCambios");
 
 let productosCache = [];
+let cambiosPendientes = {};
 
 /* LOGIN */
-formLogin.addEventListener("submit", async (e) => {
+formLogin.addEventListener("submit", async e => {
     e.preventDefault();
-    try {
-        await signInWithEmailAndPassword(auth, email.value, password.value);
-        formLogin.style.display = "none";
-        panelAdmin.style.display = "block";
-        cargarProductos();
-    } catch {
-        alert("Error de login");
-    }
+    await signInWithEmailAndPassword(auth, email.value, password.value);
+    formLogin.style.display = "none";
+    panelAdmin.style.display = "block";
+    cargarProductos();
 });
 
-/* FORMATO GB */
-gbInput.addEventListener("input", () => {
-    gbInput.value = gbInput.value.replace(/\D/g, "") + " GB";
+/* AGREGAR NUEVO (NO SE TOCA) */
+form.addEventListener("submit", async e => {
+    e.preventDefault();
+    await addDoc(collection(db, "productos"), {
+        marca: marca.value.toLowerCase(),
+        modelo: modelo.value,
+        gb: gb.value,
+        condicion: condicion.value,
+        precio: parseFloat(precio.value)
+    });
+    form.reset();
+    cargarProductos();
 });
 
-/* FORMATO PRECIO */
-precioInput.addEventListener("input", () => {
-    let v = precioInput.value.replace(/\D/g, "");
-    if (v) precioInput.value = Number(v).toLocaleString("en-US");
-});
-
-/* CARGAR PRODUCTOS */
+/* CARGAR */
 async function cargarProductos() {
     lista.innerHTML = "";
     productosCache = [];
-    const snapshot = await getDocs(collection(db, "productos"));
-    snapshot.forEach(d => productosCache.push({ id: d.id, ...d.data() }));
-    renderProductos(productosCache);
+    cambiosPendientes = {};
+
+    const snap = await getDocs(collection(db, "productos"));
+    snap.forEach(d => productosCache.push({ id: d.id, ...d.data() }));
+    render(productosCache);
 }
 
 /* RENDER */
-function renderProductos(productos) {
+function render(productos) {
     lista.innerHTML = "";
     productos.forEach(p => {
         const tr = document.createElement("tr");
@@ -66,10 +61,10 @@ function renderProductos(productos) {
             <td data-campo="modelo">${p.modelo}</td>
             <td data-campo="gb">${p.gb}</td>
             <td data-campo="condicion">${p.condicion}</td>
-            <td data-campo="precio">$${Number(p.precio).toLocaleString("en-US")}</td>
+            <td data-campo="precio">${p.precio}</td>
             <td>
-                <button onclick="editarInline(this)">Editar</button>
-                <button onclick="eliminarProducto('${p.id}')">Eliminar</button>
+                <button type="button" onclick="editarInline(this)">Editar</button>
+                <button type="button" onclick="eliminarProducto('${p.id}')">Eliminar</button>
             </td>
         `;
         lista.appendChild(tr);
@@ -79,77 +74,55 @@ function renderProductos(productos) {
 /* BUSCADOR */
 buscador.addEventListener("input", () => {
     const t = buscador.value.toLowerCase();
-    renderProductos(productosCache.filter(p =>
-        p.marca.includes(t) ||
-        p.modelo.toLowerCase().includes(t)
+    render(productosCache.filter(p =>
+        p.modelo.toLowerCase().includes(t) ||
+        p.marca.includes(t)
     ));
 });
 
-/* GUARDAR NORMAL */
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    await addDoc(collection(db, "productos"), {
-        marca: marca.value.toLowerCase(),
-        modelo: modelo.value,
-        gb: gb.value,
-        condicion: condicion.value,
-        precio: parseFloat(precioInput.value.replace(/,/g, ""))
+/* EDITAR INLINE */
+window.editarInline = (btn) => {
+    const tr = btn.closest("tr");
+    const id = tr.dataset.id;
+
+    tr.querySelectorAll("[data-campo]").forEach(td => {
+        const campo = td.dataset.campo;
+        td.innerHTML = `<input data-campo="${campo}" value="${td.innerText}" style="width:100%">`;
     });
-    form.reset();
+
+    cambiosPendientes[id] = {};
+};
+
+/* CAPTURAR CAMBIOS */
+lista.addEventListener("input", e => {
+    if (e.target.tagName !== "INPUT") return;
+    const tr = e.target.closest("tr");
+    const id = tr.dataset.id;
+    const campo = e.target.dataset.campo;
+
+    cambiosPendientes[id][campo] =
+        campo === "precio"
+        ? parseFloat(e.target.value)
+        : e.target.value;
+});
+
+/* GUARDAR TODOS */
+btnGuardarCambios.addEventListener("click", async () => {
+    const ids = Object.keys(cambiosPendientes);
+    if (!ids.length) return alert("No hay cambios");
+
+    for (let id of ids) {
+        await updateDoc(doc(db, "productos", id), cambiosPendientes[id]);
+    }
+
     cargarProductos();
+    alert("Cambios guardados ✅");
 });
 
 /* ELIMINAR */
-window.eliminarProducto = async (id) => {
+window.eliminarProducto = async id => {
     if (confirm("¿Eliminar producto?")) {
         await deleteDoc(doc(db, "productos", id));
         cargarProductos();
     }
 };
-
-/* ===== EDICIÓN INLINE ===== */
-
-window.editarInline = (btn) => {
-    const tr = btn.closest("tr");
-    tr.querySelectorAll("[data-campo]").forEach(td => {
-        const v = td.innerText.replace("$", "").replace(/,/g, "");
-        td.innerHTML = `<input value="${v}" style="width:100%">`;
-    });
-    btn.parentElement.innerHTML = `
-        <button onclick="guardarInline(this)">Guardar</button>
-        <button onclick="cancelarInline()">Cancelar</button>
-    `;
-};
-
-window.guardarInline = async (btn) => {
-    const tr = btn.closest("tr");
-    const id = tr.dataset.id;
-    const inputs = tr.querySelectorAll("input");
-
-    await updateDoc(doc(db, "productos", id), {
-        marca: inputs[0].value.toLowerCase(),
-        modelo: inputs[1].value,
-        gb: inputs[2].value,
-        condicion: inputs[3].value,
-        precio: parseFloat(inputs[4].value)
-    });
-    cargarProductos();
-};
-
-window.cancelarInline = () => cargarProductos();
-
-/* IMPORTACIÓN MASIVA */
-btnImportar.addEventListener("click", async () => {
-    const lineas = importador.value.trim().split("\n");
-    for (let l of lineas) {
-        const [marca, modelo, gb, condicion, precio] = l.split("|").map(x => x.trim());
-        if (!marca) continue;
-        await addDoc(collection(db, "productos"), {
-            marca: marca.toLowerCase(),
-            modelo, gb, condicion,
-            precio: parseFloat(precio)
-        });
-    }
-    importador.value = "";
-    cargarProductos();
-});
