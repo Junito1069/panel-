@@ -43,37 +43,22 @@
         <button type="submit">Guardar Producto</button>
     </form>
 
-    <!-- 🔥 IMPORTACIÓN MASIVA -->
+    <!-- IMPORTACIÓN MASIVA -->
     <h3>Importar productos en bloque</h3>
 
-    <textarea
-        id="importador"
-        rows="8"
-        placeholder="Formato:
-marca | modelo | gb | condicion | precio
-
-Ejemplo:
-iphone | 11 Pro Max | 64GB | B | 15995
-iphone | 12 | 128GB | A | 17995
-iphone | 12 Pro | 256GB | Como Nuevo | 20995"
-        style="width:100%; padding:10px; margin-bottom:10px;"
-    ></textarea>
+    <textarea id="importador" rows="8" style="width:100%; padding:10px;"
+    placeholder="marca | modelo | gb | condicion | precio"></textarea>
 
     <button id="btnImportar">Importar productos</button>
 
     <hr style="margin:30px 0;">
 
     <!-- BUSCADOR -->
-    <input
-        type="text"
-        id="buscador"
-        placeholder="Buscar producto..."
-        style="margin:15px 0; padding:8px; width:100%;"
-    >
+    <input type="text" id="buscador" placeholder="Buscar producto..." style="width:100%; padding:8px;">
 
     <h2>Vista Previa</h2>
 
-    <table>
+    <table border="1" width="100%">
         <thead>
             <tr>
                 <th>Marca</th>
@@ -91,3 +76,4 @@ iphone | 12 Pro | 256GB | Como Nuevo | 20995"
 <script type="module" src="script.js"></script>
 </body>
 </html>
+
