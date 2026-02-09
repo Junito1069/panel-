@@ -1,0 +1,453 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Castillo Smartphone | Catálogo</title>
+
+    <style>
+        :root {
+            --color-verde: #76bc21; 
+            --color-negro: #000000;
+            --color-gris-oscuro: #121212;
+            --color-texto-secundario: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+body {
+    font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--color-negro);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* HEADER */
+.header {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 12px;   /* 🔥 aquí lo bajas */
+}
+
+
+.header img {
+    width: 400px;
+    height: auto;
+    display: block;
+    margin: 0 auto 0 auto; /* 🔥 sin espacio abajo */
+}
+
+
+
+        /* BUSCADOR */
+ .search-container {
+    width: 95%;
+    max-width: 600px;
+    margin-top: 10px;   /* 🔥 pegado al logo */
+    margin-bottom: 20px;
+}
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--color-gris-oscuro);
+            border: 1px solid #333;
+            border-radius: 50px;
+            padding: 5px 20px;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--color-verde);
+            box-shadow: 0 0 10px rgba(118, 188, 33, 0.2);
+        }
+
+        .search-box input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px 0;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        /* HERO BANNER */
+        .hero-banner {
+            width: 95%;
+            max-width: 1000px;
+            height: 350px;
+            margin-bottom: 0px;
+            border-radius: 25px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #333;
+        }
+
+        .hero-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: s0px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .hero-overlay h2 {
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        /* CONTENEDOR INFO ESTILO FUSION (BLOQUES SEPARADOS) */
+        .contenedor-info-fusion {
+            width: 95%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .bloque-individual {
+            background: var(--color-gris-oscuro);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid #222;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .bloque-individual:hover {
+            border-color: var(--color-verde);
+            transform: translateY(-3px);
+            background: #1a1a1a;
+        }
+
+        .info-icon {
+            font-size: 1.6rem;
+        }
+
+        .info-texto {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-texto span {
+            font-size: 0.7rem;
+            color: var(--color-texto-secundario);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-texto strong {
+            font-size: 0.85rem;
+            color: #fff;
+        }
+
+        /* GRID DE PRODUCTOS */
+        .marcas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            padding: 0 20px 40px 20px;
+        }
+
+        .categoria-btn {
+            position: relative;
+            height: 400px;
+            background-color: var(--color-gris-oscuro);
+            border: 1px solid #333;
+            border-radius: 28px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .categoria-btn:hover {
+            transform: translateY(-5px);
+            border-color: var(--color-verde);
+            box-shadow: 0 10px 30px rgba(118, 188, 33, 0.2);
+        }
+
+        /* Logos pequeños y elegantes */
+        .categoria-btn img {
+            width: 70%; /* un poco más grande que antes */
+            height: auto;
+            object-fit: contain;
+            transition: transform 0.5s;
+        }
+
+        .label {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            background: #fff;
+            color: #000;
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* FOOTER ESTILO PAGOS */
+        .info-banner {
+            width: 100%;
+            max-width: 1000px;
+            background: #000;
+            padding: 40px 20px;
+            margin-top: 20px;
+            text-align: center;
+            border-top: 1px solid #222;
+        }
+
+        .aviso-pago {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .highlight-verde {
+            color: var(--color-verde);
+            display: block;
+            margin-top: 10px;
+            font-size: 1.6rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .hero-banner { height: 200px; }
+            .marcas { grid-template-columns: 1fr; }
+            .categoria-btn { height: 350px; }
+            .contenedor-info-fusion { grid-template-columns: 1fr 1fr; }
+            .header img { width: 150px; }
+        }
+        /* ===== MOBILE NICE UI ===== */
+@media (max-width: 600px) {
+
+    body {
+        padding: 0 10px;
+    }
+
+    /* HEADER */
+    .header {
+        padding-top: 8px;
+    }
+
+    .header img {
+        width: 180px;
+    }
+
+    /* SEARCH */
+    .search-container {
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .search-box {
+        padding: 8px 18px;
+    }
+
+    .search-box input {
+        font-size: 0.95rem;
+    }
+
+    /* HERO */
+    .hero-banner {
+        height: 190px;
+        border-radius: 18px;
+        margin-bottom: 15px;
+    }
+
+    .hero-overlay h2 {
+        font-size: 1.2rem;
+    }
+
+    /* INFO BLOQUES */
+    .contenedor-info-fusion {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .bloque-individual {
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .info-icon {
+        font-size: 1.4rem;
+    }
+
+    .info-texto strong {
+        font-size: 0.9rem;
+    }
+
+    /* CATEGORÍAS */
+    .marcas {
+        padding: 0 10px 30px 10px;
+    }
+
+    .categoria-btn {
+        height: 280px;
+        border-radius: 22px;
+    }
+
+    .categoria-btn img {
+        width: 65%;
+    }
+
+    .label {
+        bottom: 15px;
+        left: 15px;
+        padding: 8px 22px;
+        font-size: 0.8rem;
+    }
+
+    /* FOOTER */
+    .info-banner {
+        padding: 30px 15px;
+    }
+
+    .aviso-pago {
+        font-size: 1.1rem;
+    }
+
+    .highlight-verde {
+        font-size: 1.3rem;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <img src="logito-Photoroom.png" alt="Castillo Smartphone">
+  
+    </header>
+  
+
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="inputBuscador" onkeyup="ejecutarBusqueda()" placeholder="Buscar iPhone, Samsung, Pixel...">
+        </div>
+    </div>
+
+    <div class="hero-banner">
+        <img src="WhatsApp Image 2026-02-07 at 7.59.52 AM.jpeg" alt="Castillo Smartphone Tienda">
+        <div class="hero-overlay">
+            <h2>Calidad y Garantía en cada equipo</h2>
+        </div>
+    </div>
+
+    <div class="contenedor-info-fusion">
+        <a href="https://wa.me/8299884971" class="bloque-individual" target="_blank">
+            <span class="info-icon">💬</span>
+            <div class="info-texto">
+                <span>WhatsApp</span>
+                <strong>829-988-4971</strong>
+            </div>
+        </a>
+        
+        <div class="bloque-individual">
+            <span class="info-icon">⏰</span>
+            <div class="info-texto">
+                <span>Horario</span>
+                <strong>L-V 9AM-6PM | S 9AM-5PM</strong>
+            </div>
+        </div>
+
+        <a href="https://www.instagram.com/castillosmartphone" class="bloque-individual" target="_blank">
+            <span class="info-icon">📸</span>
+            <div class="info-texto">
+                <span>Instagram</span>
+                <strong>@castillosmartphone</strong>
+            </div>
+        </a>
+
+        <a href="https://www.google.com/maps/search/San+Carlos,+Santo+Domingo" class="bloque-individual" target="_blank">
+            <span class="info-icon">📍</span>
+            <div class="info-texto">
+                <span>Ubicación</span>
+                <strong>San Carlos, Sto. Dgo.</strong>
+            </div>
+        </a>
+    </div>
+
+    <div class="marcas" id="contenedorMarcas">
+        <button class="categoria-btn" onclick="abrirProductos('iphone')">
+            <img src="17-Photoroom.png" alt="iPhone">
+            <span class="label">iPhone</span>
+        </button>
+
+        <button class="categoria-btn" onclick="abrirProductos('samsung')">
+            <img src="s23-Photoroom.png" alt="Samsung">
+            <span class="label">Samsung</span>
+        </button>
+
+        <button class="categoria-btn" onclick="abrirProductos('pixel')">
+            <img src="pix-Photoroom.png" alt="Pixel">
+            <span class="label">Pixel</span>
+        </button>
+    </div>
+
+    <div class="info-banner">
+        <div class="aviso-pago">
+            Con tu tarjeta de crédito 💳
+            <span class="highlight-verde">ITBIS NO INCLUIDO</span>
+        </div>
+        <p style="margin-top: 20px; font-size: 0.8rem; color: #444; letter-spacing: 2px;">
+            CONTAMOS CON FINANCIAMIENTO DISPONIBLE 🏦
+        </p>
+    </div>
+
+    <script>
+        function ejecutarBusqueda() {
+            let filtro = document.getElementById('inputBuscador').value.toLowerCase();
+            let tarjetas = document.getElementsByClassName('categoria-btn');
+
+            for (let i = 0; i < tarjetas.length; i++) {
+                let nombreMarca = tarjetas[i].querySelector('.label').innerText.toLowerCase();
+                if (nombreMarca.includes(filtro)) {
+                    tarjetas[i].style.display = "flex";
+                } else {
+                    tarjetas[i].style.display = "none";
+                }
+            }
+        }
+
+        function abrirProductos(marca) {
+            localStorage.setItem("marcaActual", marca);
+            window.location.href = "productos.html";
+        }
+    </script>
+
+</body>
+</html>

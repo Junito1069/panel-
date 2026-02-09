@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Administrativo</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>Panel Administrativo</h1>
+
+<!-- LOGIN -->
+<form id="formLogin">
+    <input type="email" id="email" name="email" placeholder="Email" required>
+    <input type="password" id="password" name="password" placeholder="Password" required>
+    <button type="submit">Iniciar Sesión</button>
+</form>
+
+<div id="panelAdmin" style="display:none;">
+
+    <!-- FORM PRODUCTO INDIVIDUAL -->
+    <form id="formProducto">
+        <select id="marca" required>
+            <option value="">Selecciona Marca</option>
+            <option value="iphone">iPhone</option>
+            <option value="samsung">Samsung</option>
+            <option value="pixel">Pixel</option>
+        </select>
+
+        <input type="text" id="modelo" placeholder="Modelo" required>
+        <input type="text" id="gb" placeholder="GB" required>
+
+        <select id="condicion" required>
+            <option value="">Condición</option>
+            <option value="Nuevo">Nuevo</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="Como Nuevo">Como Nuevo</option>
+        </select>
+
+        <input type="text" id="precio" placeholder="Precio" required>
+        <button type="submit">Guardar Producto</button>
+    </form>
+
+    <!-- 🔥 IMPORTACIÓN MASIVA -->
+    <h3>Importar productos en bloque</h3>
+
+    <textarea
+        id="importador"
+        rows="8"
+        placeholder="Formato:
+marca | modelo | gb | condicion | precio
+
+Ejemplo:
+iphone | 11 Pro Max | 64GB | B | 15995
+iphone | 12 | 128GB | A | 17995
+iphone | 12 Pro | 256GB | Como Nuevo | 20995"
+        style="width:100%; padding:10px; margin-bottom:10px;"
+    ></textarea>
+
+    <button id="btnImportar">Importar productos</button>
+
+    <hr style="margin:30px 0;">
+
+    <!-- BUSCADOR -->
+    <input
+        type="text"
+        id="buscador"
+        placeholder="Buscar producto..."
+        style="margin:15px 0; padding:8px; width:100%;"
+    >
+
+    <h2>Vista Previa</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>GB</th>
+                <th>Condición</th>
+                <th>Precio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="listaProductos"></tbody>
+    </table>
+</div>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>

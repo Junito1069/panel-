@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos | Castillo Smartphone</title>
+    <style>
+        :root {
+            --color-verde: #76bc21; /* El verde de tu logo */
+            --color-negro: #000000;
+            --color-gris-oscuro: #121212;
+            --color-borde: #333333;
+            --color-texto-secundario: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-color: var(--color-negro);
+            color: #ffffff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* TÍTULO DINÁMICO */
+        #tituloMarca {
+            font-size: 2rem;
+            color: var(--color-verde);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 30px 0;
+            text-align: center;
+            border-bottom: 2px solid var(--color-verde);
+            padding-bottom: 10px;
+            width: fit-content;
+        }
+
+        /* CONTENEDOR DE LA TABLA */
+        .tabla-contenedor {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--color-gris-oscuro);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--color-borde);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        /* CABECERA DE TABLA */
+        thead {
+            background-color: #1a1a1a;
+        }
+
+        th {
+            padding: 20px;
+            color: var(--color-verde);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--color-borde);
+        }
+
+        /* FILAS Y CELDAS */
+        td {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--color-borde);
+            font-size: 0.95rem;
+        }
+
+        tbody tr {
+            transition: background 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(118, 188, 33, 0.05); /* Toque verde al pasar el mouse */
+        }
+
+        /* PRECIO RESALTADO */
+        td:last-child {
+            font-weight: bold;
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+        /* ESTILO PARA "INCLUYE GRATIS" (Opcional si lo manejas en el JS) */
+        .promo-text {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--color-verde);
+            margin-top: 4px;
+        }
+
+        /* BOTÓN VOLVER */
+        .btn-volver {
+            margin-top: 40px;
+            padding: 12px 30px;
+            background-color: transparent;
+            color: var(--color-texto-secundario);
+            border: 1px solid var(--color-borde);
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-volver:hover {
+            border-color: var(--color-verde);
+            color: var(--color-verde);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            th, td {
+                padding: 12px 10px;
+                font-size: 0.8rem;
+            }
+            #tituloMarca {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="tituloMarca">Cargando...</h1>
+
+    <div class="tabla-contenedor">
+        <table>
+            <thead>
+                <tr>
+                    <th>Modelo</th>
+                    <th>GB</th>
+                    <th>Condición</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody id="listaProductos">
+                </tbody>
+        </table>
+    </div>
+
+    <a href="index.html" class="btn-volver">← Volver al catálogo</a>
+
+    <script type="module" src="PRODUCTO.JS"></script>
+</body>
+</html>
