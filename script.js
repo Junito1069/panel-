@@ -1,5 +1,13 @@
 import { db, auth } from "./firebase.js";
-import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+    collection,
+    addDoc,
+    getDocs,
+    deleteDoc,
+    doc,
+    updateDoc,
+    getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const formLogin = document.getElementById("formLogin");
@@ -7,49 +15,34 @@ const form = document.getElementById("formProducto");
 const lista = document.getElementById("listaProductos");
 const panelAdmin = document.getElementById("panelAdmin");
 const buscador = document.getElementById("buscador");
-
 const gbInput = document.getElementById("gb");
 const precioInput = document.getElementById("precio");
-
 const importador = document.getElementById("importador");
 const btnImportar = document.getElementById("btnImportar");
 
-let editId = null;
 let productosCache = [];
 
 /* LOGIN */
 formLogin.addEventListener("submit", async (e) => {
     e.preventDefault();
     try {
-        await signInWithEmailAndPassword(
-            auth,
-            formLogin.email.value,
-            formLogin.password.value
-        );
+        await signInWithEmailAndPassword(auth, email.value, password.value);
         formLogin.style.display = "none";
         panelAdmin.style.display = "block";
         cargarProductos();
-    } catch (error) {
+    } catch {
         alert("Error de login");
     }
 });
 
 /* FORMATO GB */
 gbInput.addEventListener("input", () => {
-    let v = gbInput.value.replace(/\D/g, "");
-    if (v) gbInput.value = v + " GB";
-});
-gbInput.addEventListener("focus", () => {
-    gbInput.value = gbInput.value.replace(/\D/g, "");
-});
-gbInput.addEventListener("blur", () => {
-    let v = gbInput.value.replace(/\D/g, "");
-    if (v) gbInput.value = v + " GB";
+    gbInput.value = gbInput.value.replace(/\D/g, "") + " GB";
 });
 
 /* FORMATO PRECIO */
 precioInput.addEventListener("input", () => {
-    let v = precioInput.value.replace(/,/g, "").replace(/\D/g, "");
+    let v = precioInput.value.replace(/\D/g, "");
     if (v) precioInput.value = Number(v).toLocaleString("en-US");
 });
 
@@ -57,29 +50,25 @@ precioInput.addEventListener("input", () => {
 async function cargarProductos() {
     lista.innerHTML = "";
     productosCache = [];
-
     const snapshot = await getDocs(collection(db, "productos"));
-    snapshot.forEach(docu => {
-        productosCache.push({ id: docu.id, ...docu.data() });
-    });
-
+    snapshot.forEach(d => productosCache.push({ id: d.id, ...d.data() }));
     renderProductos(productosCache);
 }
 
-/* RENDER TABLA */
+/* RENDER */
 function renderProductos(productos) {
     lista.innerHTML = "";
-
     productos.forEach(p => {
         const tr = document.createElement("tr");
+        tr.dataset.id = p.id;
         tr.innerHTML = `
-            <td>${p.marca}</td>
-            <td>${p.modelo}</td>
-            <td>${p.gb}</td>
-            <td>${p.condicion}</td>
-            <td>$${Number(p.precio).toLocaleString("en-US")}</td>
+            <td data-campo="marca">${p.marca}</td>
+            <td data-campo="modelo">${p.modelo}</td>
+            <td data-campo="gb">${p.gb}</td>
+            <td data-campo="condicion">${p.condicion}</td>
+            <td data-campo="precio">$${Number(p.precio).toLocaleString("en-US")}</td>
             <td>
-                <button onclick="editarProducto('${p.id}')">Editar</button>
+                <button onclick="editarInline(this)">Editar</button>
                 <button onclick="eliminarProducto('${p.id}')">Eliminar</button>
             </td>
         `;
@@ -89,53 +78,26 @@ function renderProductos(productos) {
 
 /* BUSCADOR */
 buscador.addEventListener("input", () => {
-    const texto = buscador.value.toLowerCase();
-    renderProductos(
-        productosCache.filter(p =>
-            p.marca.includes(texto) ||
-            p.modelo.toLowerCase().includes(texto) ||
-            p.gb.toLowerCase().includes(texto) ||
-            p.condicion.toLowerCase().includes(texto)
-        )
-    );
+    const t = buscador.value.toLowerCase();
+    renderProductos(productosCache.filter(p =>
+        p.marca.includes(t) ||
+        p.modelo.toLowerCase().includes(t)
+    ));
 });
 
-/* GUARDAR / EDITAR */
+/* GUARDAR NORMAL */
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
-    const producto = {
-        marca: form.marca.value.toLowerCase(),
-        modelo: form.modelo.value,
-        gb: form.gb.value,
-        condicion: form.condicion.value,
+    await addDoc(collection(db, "productos"), {
+        marca: marca.value.toLowerCase(),
+        modelo: modelo.value,
+        gb: gb.value,
+        condicion: condicion.value,
         precio: parseFloat(precioInput.value.replace(/,/g, ""))
-    };
-
-    if (editId) {
-        await updateDoc(doc(db, "productos", editId), producto);
-        editId = null;
-    } else {
-        await addDoc(collection(db, "productos"), producto);
-    }
-
+    });
     form.reset();
     cargarProductos();
 });
-
-/* EDITAR */
-window.editarProducto = async (id) => {
-    const snap = await getDoc(doc(db, "productos", id));
-    if (snap.exists()) {
-        const d = snap.data();
-        form.marca.value = d.marca;
-        form.modelo.value = d.modelo;
-        form.gb.value = d.gb;
-        form.condicion.value = d.condicion;
-        precioInput.value = Number(d.precio).toLocaleString("en-US");
-        editId = id;
-    }
-};
 
 /* ELIMINAR */
 window.eliminarProducto = async (id) => {
@@ -145,29 +107,49 @@ window.eliminarProducto = async (id) => {
     }
 };
 
-/* 🔥 IMPORTACIÓN MASIVA */
+/* ===== EDICIÓN INLINE ===== */
+
+window.editarInline = (btn) => {
+    const tr = btn.closest("tr");
+    tr.querySelectorAll("[data-campo]").forEach(td => {
+        const v = td.innerText.replace("$", "").replace(/,/g, "");
+        td.innerHTML = `<input value="${v}" style="width:100%">`;
+    });
+    btn.parentElement.innerHTML = `
+        <button onclick="guardarInline(this)">Guardar</button>
+        <button onclick="cancelarInline()">Cancelar</button>
+    `;
+};
+
+window.guardarInline = async (btn) => {
+    const tr = btn.closest("tr");
+    const id = tr.dataset.id;
+    const inputs = tr.querySelectorAll("input");
+
+    await updateDoc(doc(db, "productos", id), {
+        marca: inputs[0].value.toLowerCase(),
+        modelo: inputs[1].value,
+        gb: inputs[2].value,
+        condicion: inputs[3].value,
+        precio: parseFloat(inputs[4].value)
+    });
+    cargarProductos();
+};
+
+window.cancelarInline = () => cargarProductos();
+
+/* IMPORTACIÓN MASIVA */
 btnImportar.addEventListener("click", async () => {
-    const texto = importador.value.trim();
-    if (!texto) return alert("No hay datos");
-
-    const lineas = texto.split("\n");
-
-    for (let linea of lineas) {
-        const [marca, modelo, gb, condicion, precio] =
-            linea.split("|").map(x => x.trim());
-
-        if (!marca || !modelo || !gb || !condicion || !precio) continue;
-
+    const lineas = importador.value.trim().split("\n");
+    for (let l of lineas) {
+        const [marca, modelo, gb, condicion, precio] = l.split("|").map(x => x.trim());
+        if (!marca) continue;
         await addDoc(collection(db, "productos"), {
             marca: marca.toLowerCase(),
-            modelo,
-            gb,
-            condicion,
+            modelo, gb, condicion,
             precio: parseFloat(precio)
         });
     }
-
     importador.value = "";
     cargarProductos();
-    alert("Productos importados correctamente ✅");
 });
